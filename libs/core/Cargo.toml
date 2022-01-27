@@ -1,0 +1,18 @@
+[package]
+name = "block-iter-core"
+version = "0.1.0"
+edition = "2021"
+authors = ["Dawid Ciężarkiewicz <dpc@dpc.pw>"]
+description = "Iterator-based bitcoin indexing toolkit"
+keywords = ["bitcoin", "indexer", "database", "cryptocurrency"]
+license = "MPL-2.0/MIT/Apache-2.0"
+documentation = "https://docs.rs/block-iter"
+homepage = "https://github.com/dpc/block-iter"
+repository = "https://github.com/dpc/block-iter"
+readme = "README.md"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+bitcoin = "0.27"
+anyhow = "1"

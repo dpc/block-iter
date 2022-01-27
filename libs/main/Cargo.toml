@@ -1,0 +1,35 @@
+[package]
+name = "block-iter"
+version = "0.1.0"
+edition = "2021"
+authors = ["Dawid Ciężarkiewicz <dpc@dpc.pw>"]
+description = "Iterator-based bitcoin indexing toolkit"
+keywords = ["bitcoin", "indexer", "database", "cryptocurrency"]
+license = "MPL-2.0/MIT/Apache-2.0"
+documentation = "https://docs.rs/block-iter"
+homepage = "https://github.com/dpc/block-iter"
+repository = "https://github.com/dpc/block-iter"
+readme = "README.md"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+dpc-pariter = "0.4"
+block-iter-core = { path = "../core" }
+block-iter-rpc = { path = "../rpc" }
+bitcoin = "0.27"
+anyhow = "1"
+blocks_iterator = "0.10"
+glob = "*"
+log = "*"
+itertools = "*"
+
+[dev-dependencies]
+clap = { version = "3.0.13", features = ["derive", "env"] }
+env_logger = "0.9"
+
+[[example]]
+name = "bench-bitcoincore-rpc"
+
+[[example]]
+name = "bench-read-detect"
