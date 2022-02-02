@@ -4,7 +4,9 @@ use std::{
     sync::{Arc, Mutex},
 };
 
+pub mod block_extra;
 pub mod read_detect;
+pub mod reorder;
 
 /// Before reorder we keep only the position of the block in the file system and data relative
 /// to the block hash, the previous hash and the following hash (populated during reorder phase)

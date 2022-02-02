@@ -1,20 +1,51 @@
 use std::time::{Duration, Instant};
 
 use block_iter_core::WithTransactions;
+use fallible_iterator::{FallibleIterator, IteratorExt as _};
 
 pub trait IteratorExt {
     fn bench_txs(self)
     where
         Self: Iterator,
-        Self::Item: WithTransactions;
-    fn bench_items(self);
+        Self: Sized,
+        Self::Item: WithTransactions,
+    {
+        self.into_fallible()
+            .bench_txs()
+            .map_err(|_e| ())
+            .expect("infallible iterator somehow returned an error");
+    }
+
+    fn bench_items(self)
+    where
+        Self: Sized,
+        Self: Iterator,
+        <Self as Iterator>::Item: WithTransactions,
+    {
+        self.into_fallible()
+            .bench_txs()
+            .map_err(|_e| ())
+            .expect("infallible iterator somehow returned an error");
+    }
 }
 
-impl<I> IteratorExt for I
+impl<I> IteratorExt for I where I: Iterator {}
+
+pub trait FallibleIteratorExt {
+    fn bench_txs(self) -> Result<(), Self::Error>
+    where
+        Self: FallibleIterator,
+        Self::Item: WithTransactions;
+    fn bench_items(self) -> Result<(), Self::Error>
+    where
+        Self: FallibleIterator;
+}
+
+impl<I> FallibleIteratorExt for I
 where
-    I: Iterator,
+    I: FallibleIterator,
 {
-    fn bench_txs(mut self)
+    fn bench_txs(mut self) -> Result<(), <Self as FallibleIterator>::Error>
     where
         I::Item: WithTransactions,
     {
@@ -24,7 +55,7 @@ where
         let mut txs = 0;
         let mut blocks_total = 0;
         let mut txs_total = 0;
-        while let Some(item) = self.next() {
+        while let Some(item) = self.next()? {
             blocks += 1;
             blocks_total += 1;
             txs += item.transactions().len() as u64;
@@ -51,14 +82,15 @@ where
                 blocks = 0;
             }
         }
+        Ok(())
     }
 
-    fn bench_items(mut self) {
+    fn bench_items(mut self) -> Result<(), <Self as FallibleIterator>::Error> {
         let start = Instant::now();
         let mut last = Instant::now();
         let mut blocks = 0;
         let mut blocks_total = 0;
-        while let Some(_item) = self.next() {
+        while let Some(_item) = self.next()? {
             blocks += 1;
             blocks_total += 1;
 
@@ -79,5 +111,6 @@ where
                 blocks = 0;
             }
         }
+        Ok(())
     }
 }

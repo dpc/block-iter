@@ -2,6 +2,8 @@ use super::FsBlock;
 use anyhow::{format_err, Result};
 use block_iter_core::bitcoin::consensus::Decodable;
 use block_iter_core::bitcoin::{Block, BlockHash, Network};
+use fallible_iterator::FallibleIterator;
+use fallible_iterator::{ IteratorExt};
 use itertools::Itertools;
 use log::{error, info};
 use std::collections::HashSet;
@@ -31,7 +33,7 @@ pub struct DetectedBlock {
 }
 
 pub struct ReadDetect {
-    iter: Box<dyn Iterator<Item = Result<FsBlock>>>,
+    iter: Box<dyn FallibleIterator<Item = FsBlock, Error = anyhow::Error> + Send>,
 }
 impl DetectedBlock {
     fn into_fs_block(self, file: &Arc<Mutex<File>>) -> FsBlock {
@@ -82,7 +84,8 @@ impl ReadDetect {
 
                 Ok(fs_blocks)
             })
-            .flatten_ok();
+            .flatten_ok()
+            .transpose_into_fallible();
 
         Ok(Self {
             iter: Box::new(iter),
@@ -90,10 +93,11 @@ impl ReadDetect {
     }
 }
 
-impl Iterator for ReadDetect {
-    type Item = Result<FsBlock>;
+impl FallibleIterator for ReadDetect {
+    type Item = FsBlock;
+    type Error = anyhow::Error;
 
-    fn next(&mut self) -> Option<Self::Item> {
+    fn next(&mut self) -> Result<Option<Self::Item>> {
         self.iter.next()
     }
 }

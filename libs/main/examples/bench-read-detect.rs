@@ -1,7 +1,7 @@
 use std::path::PathBuf;
 
 use anyhow::Result;
-use block_iter::{bench::IteratorExt as _, source::read_detect::ReadDetect};
+use block_iter::{bench::FallibleIteratorExt as _, source::read_detect::ReadDetect};
 use clap::Parser;
 
 #[derive(Debug, Parser, Clone)]
@@ -14,7 +14,7 @@ fn main() -> Result<()> {
     env_logger::init();
     let opts: Opts = clap::Parser::parse();
 
-    ReadDetect::new(&opts.bitcoin_core_blocks_dir, bitcoin::Network::Bitcoin)?.bench_items();
+    ReadDetect::new(&opts.bitcoin_core_blocks_dir, bitcoin::Network::Bitcoin)?.bench_items()?;
 
     Ok(())
 }

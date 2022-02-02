@@ -23,6 +23,7 @@ blocks_iterator = "0.10"
 glob = "*"
 log = "*"
 itertools = "*"
+fallible-iterator = { git = "https://github.com/dpc/rust-fallible-iterator" }
 
 [dev-dependencies]
 clap = { version = "3.0.13", features = ["derive", "env"] }
